@@ -15,20 +15,20 @@ C = np.array([
 ])
 
 # 2. Matrice Q : Normalisation des colonnes
-N = C.shape[0]  # Nombre de pages
-Q = np.zeros_like(C, dtype=float)
+N = C.shape[0]  # Renvoie la taille de premièredimension (lignes) de C, donc nombre de pages
+Q = np.zeros_like(C, dtype=float) #Crée une matrice de zéros ayant le même adn que C
 
 for j in range(N):
-    col_sum = np.sum(C[:, j])
-    if col_sum > 0:
-        Q[:, j] = C[:, j] / col_sum
+    somme_colonnes = np.sum(C[:, j])
+    if somme_colonnes > 0:
+        Q[:, j] = C[:, j] / somme_colonnes
 
 # 3. Matrice P : Ajout des colonnes nulles
 e = np.ones(N)
 d = (np.sum(C, axis=0) == 0).astype(float)  # Colonnes nulles
 P = Q + (1 / N) * np.outer(e, d)
 
-# 4. Matrice A : Ajout du paramètre alpha
+# 4. Matrice A : Ajout du paramètre alpha (compris entre 0 et 1)
 alpha = 0.85
 A = alpha * P + (1 - alpha) / N * np.outer(e, e)
 
