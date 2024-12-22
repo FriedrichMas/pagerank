@@ -1,4 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
+
+#PARTIE I
 
 # 1. Matrice C : Représente les liens
 C = np.array([
@@ -15,7 +18,7 @@ C = np.array([
 ])
 
 # 2. Matrice Q : Normalisation des colonnes
-N = C.shape[0]  # Renvoie la taille de premièredimension (lignes) de C, donc nombre de pages
+N = C.shape[0]  # Renvoie la taille de la première dimension (ligne) de C, donc nombre de pages
 Q = np.zeros_like(C, dtype=float) #Crée une matrice de zéros ayant le même adn que C
 
 for j in range(N):
@@ -36,3 +39,44 @@ print("Matrice C:\n", C)
 print("Matrice Q:\n", Q)
 print("Matrice P:\n", P)
 print("Matrice A:\n", A)
+
+
+#PARTIE II
+
+# 1. Définir les paramètres
+b = (1 - alpha) / N * e
+I = np.eye(N)
+A_2 = I - alpha * P  # Matrice du système
+w_values = np.linspace(0.1, 1.9, 100)  # Paramètres de relaxation
+iterations = []
+
+# 2. Méthode de relaxation
+for w in w_values:
+    r = np.zeros(N)  # Initialisation
+    max_iter = 1000
+    tolerance = 1e-6
+    num_iter = 0
+    
+    for k in range(max_iter):
+        #r_new = r + w * (b - A_2 @ r)  # Itération de relaxation
+        M = (1/w)*np.diag(A_2) + np.tril(A_2)
+        Nn = ((1-w)/w)*np.diag(A_2) + np.triu(A_2)
+        M_inv = np.linalg.inv(M)
+        Lw = M_inv @ Nn
+        r_new = Lw @ r + M_inv @ b
+        if np.linalg.norm(r_new - r, 1) < tolerance:
+            break
+        r = r_new
+        num_iter += 1
+    
+    iterations.append(num_iter)
+print("le vecteur r est :\n", r_new)
+
+# 3. Tracer la courbe
+plt.plot(w_values, iterations)
+plt.xlabel("Paramètre de relaxation (w)")
+plt.ylabel("Nombre d'itérations")
+plt.title("Convergence en fonction de w")
+plt.grid()
+plt.show()
+
